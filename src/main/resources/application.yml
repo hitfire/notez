@@ -1,0 +1,111 @@
+# 项目相关配置
+notez:
+  # 名称
+  name: notez
+  # 版本
+  version: 1.1.0
+  author: hitfire
+
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为80
+  port: 8899
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+  #使用undertow
+  undertow:
+    # Undertow 日志存放目录
+    accesslog.dir: /home/data/undertow/logs
+    # 是否启动日志
+    accesslog.enabled: true
+    # 日志格式
+    accesslog.pattern: common
+    # 日志文件名前缀
+    accesslog.prefix: access_log
+    # 日志文件名后缀
+    accesslog.suffix: log
+    # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+    io-threads: 4
+    # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+    # 它的值设置取决于系统线程执行任务的阻塞系数，默认值是IO线程数*8
+    worker-threads: 32
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    # 每块buffer的空间大小,越小的空间被利用越充分
+    buffer-size: 1024
+    # 是否分配的直接内存
+    direct-buffers: true
+
+# Spring配置
+spring:
+  profiles:
+    active: dev
+  # 文件上传
+  servlet:
+    multipart:
+      # 单个文件大小
+      max-file-size:  20MB
+      # 设置总上传的文件大小
+      max-request-size:  40MB
+  # 服务模块
+  devtools:
+    restart:
+      # 热部署开关
+      enabled: false
+
+  # 数据源配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      # 主库数据源
+      master:
+        enabled: true
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url:
+        username:
+        password:
+
+      # 初始连接数
+      initialSize: 1
+      # 最小连接池数量
+      minIdle: 1
+      # 最大连接池数量
+      maxActive: 5
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      webStatFilter:
+        enabled: true
+      statViewServlet:
+        enabled: true
+        # 设置白名单，不填则允许所有访问
+        allow:
+        url-pattern: /monitor/druid/*
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
